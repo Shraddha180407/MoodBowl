@@ -1,0 +1,43 @@
+flowchart TD
+    %% Custom Styling
+    classDef startStop fill:#ECEFF1,stroke:#37474F,stroke-width:2px,color:#000000;
+    classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:1px,color:#000000;
+    classDef decision fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px,color:#000000;
+    classDef dbSymbol fill:#FFF3E0,stroke:#EF6C00,stroke-width:1px,color:#000000;
+
+    StartNode([Start: User opens e-commerce/delivery site]):::startStop --> PageDetect{Is URL Supported?}:::decision
+    
+    PageDetect -- No --> IdleState[Extension remains in background sleep]:::process
+    PageDetect -- Yes --> LoadExtension[Step 1: Extension injects content script & activates]:::process
+    
+    LoadExtension --> ScanContent[Step 2: Parse product name, claims, nutrients & descriptions]:::process
+    ScanContent --> ValidateData{Are raw product details fully captured?}:::decision
+    
+    ValidateData -- No --> ErrorState[Show fallback error message in popup]:::process
+    ValidateData -- Yes --> PreprocessData[Step 3: Normalize text, labels, & extract claims]:::process
+    
+    PreprocessData --> AIModel[Step 4: AI Model audits marketing claims & nutrition profiles]:::process
+    
+    subgraph AIExtEngine ["Mood Bowl AI extension processing"]
+        AIModel --> SentAudit[A. Evaluate emotional/marketing traps: health halo, greenwashing]:::process
+        SentAudit --> NutrCheck[B. Extract nutritional ratios: sugar caps, calorie densities]:::process
+        NutrCheck --> MoodMatch[C. Correlate with user mood history & health settings]:::process
+    end
+
+    MoodMatch --> AuditCheck{Are marketing claims misleading / food unhealthy?}:::decision
+    
+    AuditCheck -- No --> OutputClear[Step 5A: Display 'Product Verified' badge in popup]:::process
+    AuditCheck -- Yes --> GenAlternative[Step 5B: AI generates mood-boosting bowl alternatives]:::process
+    
+    OutputClear --> ShowPopup[Step 6: Display results, insights & scores in UI popup]:::process
+    GenAlternative --> ShowPopup
+    
+    ShowPopup --> UserChoice{Does user select recommendations/swaps?}:::decision
+    
+    UserChoice -- Yes --> AddSwap[Step 7A: Redirect/Add alternative ingredient to cart]:::process
+    UserChoice -- No --> LogChoice[Step 7B: Log raw choice to database for profile tracking]:::process
+    
+    AddSwap --> SaveDB[(Write transaction/insight log to recommendations DB)]:::dbSymbol
+    LogChoice --> SaveDB
+    
+    SaveDB --> EndNode([End: Loop resets for next scanned page]):::startStop

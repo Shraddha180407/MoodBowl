@@ -1,0 +1,22 @@
+Traceback (most recent call last):
+  File "C:\Users\shrad\Downloads\moodbite\venv\Lib\site-packages\google\genai\live.py", line 1107, in connect
+    raw_response = await ws.recv(decode=False)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shrad\Downloads\moodbite\venv\Lib\site-packages\websockets\asyncio\connection.py", line 324, in recv
+    raise self.protocol.close_exc from self.recv_exc
+websockets.exceptions.ConnectionClosedError: received 1008 (policy violation) models/gemini-2.0-flash-exp is not found for API version v1beta, or is not supported for bidiGenerateContent. Call ModelSer; then sent 1008 (policy violation) models/gemini-2.0-flash-exp is not found for API version v1beta, or is not supported for bidiGenerateContent. Call ModelSer
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\shrad\Downloads\moodbite\backend\app\services\orchestrator.py", line 361, in waiter_live_session
+    async with client.aio.live.connect(model='models/gemini-2.0-flash-exp', config={'system_instruction': instruction}) as session:
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shrad\AppData\Local\Programs\Python\Python312\Lib\contextlib.py", line 210, in __aenter__
+    return await anext(self.gen)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\shrad\Downloads\moodbite\venv\Lib\site-packages\google\genai\live.py", line 1117, in connect
+    errors.APIError.raise_error(code, reason, None)
+  File "C:\Users\shrad\Downloads\moodbite\venv\Lib\site-packages\google\genai\errors.py", line 188, in raise_error
+    raise cls(status_code, response_json, response)
+google.genai.errors.APIError: 1008 None. models/gemini-2.0-flash-exp is not found for API version v1beta, or is not supported for bidiGenerateContent. Call ModelSer

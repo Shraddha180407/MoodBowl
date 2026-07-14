@@ -1,0 +1,48 @@
+flowchart TD
+    %% Custom Styling
+    classDef startStop fill:#ECEFF1,stroke:#37474F,stroke-width:2px,color:#000000;
+    classDef process fill:#E3F2FD,stroke:#1565C0,stroke-width:1px,color:#000000;
+    classDef decision fill:#FFF9C4,stroke:#FBC02D,stroke-width:2px,color:#000000;
+    classDef dbSymbol fill:#FFF3E0,stroke:#EF6C00,stroke-width:1px,color:#000000;
+    
+    StartNode([Start: User Opens Mood Bowl App]):::startStop --> AuthCheck{Registered / Logged In?}:::decision
+    
+    AuthCheck -- No --> RegisterProcess[Step 1A: Register Credentials]:::process
+    RegisterProcess --> SaveUserDB[(Store User Profile in User DB)]:::dbSymbol
+    SaveUserDB --> LoginProcess[Step 1B: Authenticate Login Session]:::process
+    
+    AuthCheck -- Yes --> LoginProcess
+    
+    LoginProcess --> DashboardView[Access Main Dashboard & Input Panel]:::process
+    DashboardView --> InputMood[Step 2: User Selects Primary Mood Rating]:::process
+    InputMood --> JournalInput[Step 3: User Optionally Writes Journal Entry]:::process
+    
+    JournalInput --> ValidationCheck{Is Input Format Valid?}:::decision
+    
+    ValidationCheck -- No --> FormatError[Display Validation Error & Highlight Form]:::process
+    FormatError --> InputMood
+    
+    ValidationCheck -- Yes --> WriteMoodDB[Step 5: Write Entry to Mood History DB]:::dbSymbol
+    
+    WriteMoodDB --> AIAnalysis[Step 6: Trigger Background AI Analysis Engine]:::process
+    
+    subgraph AIPipeline ["AI & Analytical Processing Pipeline"]
+        AIAnalysis --> SentimentAnalysis[Step 7: Perform Sentiment Analysis on Text]:::process
+        SentimentAnalysis --> EmoClassification[Step 8: Execute Emotion Classification]:::process
+        EmoClassification --> TrendAnalysis[Step 9: Detect Mood Trends & Patterns]:::process
+    end
+    
+    TrendAnalysis --> RecGenerator[Step 10: Generate Personalized Wellness Recommendations]:::process
+    RecGenerator --> SaveRecsDB[(Store Recommendations in Recs DB)]:::dbSymbol
+    
+    SaveRecsDB --> UIUpdate[Step 11: Update App UI & Dashboard Charts]:::process
+    UIUpdate --> ViewHistory[Step 12: User Views Analytical Insights & History]:::process
+    
+    ViewHistory --> NotifCheck{Are Trigger Metrics Met?}:::decision
+    
+    NotifCheck -- Yes --> SendNotif[Step 13: Push Notification System Dispatches Tips/Reminders]:::process
+    SendNotif --> EndCycle[Step 14: Loop Closes - Wait for Next Tracking Iteration]:::process
+    
+    NotifCheck -- No --> EndCycle
+    
+    EndCycle --> StartNode

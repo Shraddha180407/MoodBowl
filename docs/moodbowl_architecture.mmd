@@ -1,0 +1,82 @@
+graph TB
+    %% Styling definitions
+    classDef frontend fill:#E3F2FD,stroke:#1565C0,stroke-width:2px,color:#0D47A1;
+    classDef backend fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20;
+    classDef aiml fill:#F3E5F5,stroke:#6A1B9A,stroke-width:2px,color:#4A148C;
+    classDef database fill:#FFF3E0,stroke:#EF6C00,stroke-width:2px,color:#E65100;
+    classDef external fill:#ECEFF1,stroke:#37474F,stroke-width:2px,color:#263238;
+    classDef userNode fill:#FFFFFF,stroke:#333333,stroke-width:2px,color:#000000;
+
+    subgraph FrontEndLayer ["Frontend UI Layer"]
+        UI["User Interface (Web/Mobile App)"]:::frontend
+        Login["Login & Auth Screens"]:::frontend
+        Form["Mood Entry Forms"]:::frontend
+        Dash["Dashboard Panel"]:::frontend
+        Analytics["Analytics & Reports Page"]:::frontend
+    end
+
+    subgraph BackEndLayer ["Backend Logic Layer"]
+        API["API Gateway / Server"]:::backend
+        AuthServ["Authentication Service"]:::backend
+        MoodServ["Mood Management Service"]:::backend
+        RecEngine["Recommendation Engine"]:::backend
+        NotifServ["Notification Service"]:::backend
+    end
+
+    subgraph AIMLLayer ["AI / ML Analytical Layer"]
+        SentModel["Sentiment Analysis Model"]:::aiml
+        EmoClass["Emotion Classification Model"]:::aiml
+        PatternModel["Mood Pattern Analysis Engine"]:::aiml
+        RecGen["Personalized Recommendation Generator"]:::aiml
+    end
+
+    subgraph DatabaseLayer ["Database Storage Layer"]
+        UserDB[("[(User Database)]")]:::database
+        MoodDB[("[(Mood History Database)]")]:::database
+        RecDB[("[(Recommendations Database)]")]:::database
+    end
+
+    subgraph ExternalLayer ["External Services Layer"]
+        EmailSvc["Email Notifications API"]:::external
+        PushSvc["Push Notification Hub"]:::external
+        WellnessAPI["Wellness Resource API"]:::external
+    end
+
+    %% Flow Arrows
+    User(("User")):::userNode --> UI
+    UI --> API
+    
+    %% Authentication Loop
+    API --> AuthServ
+    AuthServ --> UserDB
+
+    %% Mood Entry & Management Loop
+    UI -.-> |Submit Mood & Journal| Form
+    Form --> API
+    API --> MoodServ
+    MoodServ --> MoodDB
+
+    %% AI Analysis Loop
+    MoodDB --> SentModel
+    MoodDB --> EmoClass
+    MoodDB --> PatternModel
+
+    %% Recommendation Pipeline
+    SentModel --> RecGen
+    EmoClass --> RecGen
+    PatternModel --> RecGen
+    
+    RecGen --> RecEngine
+    RecEngine --> RecDB
+    RecEngine --> WellnessAPI
+    RecEngine -.-> |Return Suggestions| Dash
+
+    %% Notification Pipeline
+    PatternModel --> NotifServ
+    NotifServ --> EmailSvc
+    NotifServ --> PushSvc
+    
+    %% Feedbacks to User
+    Dash --> UI
+    EmailSvc --> User
+    PushSvc --> User
