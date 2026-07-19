@@ -1,0 +1,3 @@
+[submodule "live-streaming"]
+	path = live-streaming
+	url = https://github.com/Ashka05/moodbowl_streamingdb.git
