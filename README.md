@@ -1,76 +1,152 @@
-# MoodBowl AI System — Setup Guide
+# 🍲 MoodBowl — Eat What You Feel
 
-A production-ready MVP for a mood-aware food recommendation chatbot using **FastAPI, PostgreSQL, Redis, and Gemini LLM**.
-
-## 📋 Prerequisites
-
-Before setting up the project, ensure you have the following installed on your machine:
-1. **[Docker Desktop](https://www.docker.com/products/docker-desktop/)**: Mandatory for running the database (PostgreSQL) and session store (Redis).
-2. **[Python 3.11+](https://www.python.org/downloads/)**: Required for the backend server.
-3. **Google Gemini API Key**: Obtain one from the [Google AI Studio](https://aistudio.google.com/).
+MoodBowl is a state-of-the-art, mood-aware food recommendation and ordering platform. By merging text analysis, speech transcription, and real-time voice streaming, MoodBowl tailors your dining choices to your current emotional state.
 
 ---
 
-## 🚀 Quick Start Guide
+## 🏗️ System Architecture
 
-### 1. Clone & Configure
-Copy `.env.example` to `.env` and fill in your Gemini API Key.
-```bash
-cp .env.example .env
-```
-*Make sure `GOOGLE_GEMINI_API_KEY` is set correctly in the `.env` file.*
+MoodBowl is structured into two main components:
+1. **Core API Gateway & Orchestrator (FastAPI):** Handles deterministic recommendations, session storage, and persistent database logic.
+2. **Streaming & Frontend Host (Django & WebSockets):** Serves the full Single Page Application (SPA), hosts the live streaming analytics dashboard, and orchestrates live audio streaming sessions with the **Gemini Live API** via bi-directional WebSockets.
 
-### 2. Start Infrastructure (Docker)
-Ensure Docker Desktop is running, then start the database and Redis services:
-```bash
-docker-compose up -d
-```
+```mermaid
+graph TD
+    subgraph Client [Client-Side App]
+        SPA["Frontend SPA (HTML/JS)"]
+        Dashboard["Analytics Dashboard"]
+    end
 
-### 3. Setup Python Backend
-Navigate to the `backend` folder and set up your virtual environment:
-```powershell
-cd backend
-```
-*(Windows)*:
-```powershell
-python -m venv venv
-.\venv\Scripts\activate
-pip install -r requirements.txt
-```
+    subgraph DjangoServer [Django Streaming Server]
+        SubAPI["Django REST API"]
+        WS["WebSocket Voice Stream Handler"]
+        MLRec["Streaming ML Recommender"]
+    end
 
-### 4. Seed Database
-Populate the menu with 20+ initial food items:
-```powershell
-python -m app.seed
-```
+    subgraph FastAPIServer [FastAPI Gateway]
+        Orch["Mood Orchestrator"]
+        DetRec["Deterministic Recommender"]
+    end
 
-### 5. Run the Server
-Launch the FastAPI application:
-```powershell
-uvicorn app.main:app --port 8000 --reload
+    subgraph Services [External & DB Services]
+        Gemini["Google Gemini Live API"]
+        SQLite1["moodbowl.db (FastAPI)"]
+        SQLite2["moodbite.db (Django)"]
+    end
+
+    SPA -->|REST Requests| Orch
+    SPA -->|REST Requests| SubAPI
+    SPA -->|Bi-directional WS Audio| WS
+    WS <-->|Stream Audio/Text| Gemini
+    Orch --> SQLite1
+    SubAPI --> SQLite2
+    Dashboard --> SubAPI
 ```
 
 ---
 
-## 🛠 Features Included
-- **Mood Orchestrator**: Uses a two-pass approach (Regex + Gemini) for precise intent detection.
-- **Deterministic Recommender**: Intelligent food filtering with progressive fallback (Dietary Prefs -> Mood Tags -> Top Rated).
-- **Persistent Sessions**: Redis-based session tracking with a 30-minute TTL.
-- **Rate Limiting**: Integrated `slowapi` to prevent abuse (e.g., 10 chat messages/min).
+## 📂 Project Structure
+
+*   **[`backend/`](file:///c:/Users/shrad/Downloads/moodbite/backend):** FastAPI backend.
+    *   **[`app/services/orchestrator.py`](file:///c:/Users/shrad/Downloads/moodbite/backend/app/services/orchestrator.py):** Main coordination service integrating text analysis and LLM calls.
+    *   **[`static/`](file:///c:/Users/shrad/Downloads/moodbite/backend/static):** Static assets and alternative chat UI elements.
+*   **[`live-streaming/`](file:///c:/Users/shrad/Downloads/moodbite/live-streaming):** Django backend and main frontend app (git submodule).
+    *   **[`templates/app.html`](file:///c:/Users/shrad/Downloads/moodbite/live-streaming/templates/app.html):** Core Single Page Application (SPA) container.
+    *   **[`static/js/app.js`](file:///c:/Users/shrad/Downloads/moodbite/live-streaming/static/js/app.js):** Frontend SPA application logic (API integration, audio capturing, live WebSocket connection).
+    *   **[`apps/voice_ai/websocket_handler.py`](file:///c:/Users/shrad/Downloads/moodbite/live-streaming/apps/voice_ai/websocket_handler.py):** Direct real-time ASGI WebSocket server facilitating bidirectional voice-to-voice streaming with the Gemini Live API.
 
 ---
 
-## 🧪 Testing the API
-Once the server is running, you can:
-- **Interactive UI**: Visit [http://localhost:8000/docs](http://localhost:8000/docs) (Swagger).
-- **Check Menu**: `GET http://localhost:8000/api/menu`
-- **Chat with AI**: `POST http://localhost:8000/api/chat`
-  - Body: `{ "user_id": 1, "message": "I'm feeling stressed", "session_id": "user_123" }`
+## 🛠️ Environment Configuration
+
+Create a `.env` file in the project root directory and define the following variables:
+
+```ini
+# Google Gemini API Key (Required for Live Voice AI & Orchestrator)
+GOOGLE_GEMINI_API_KEY="your-gemini-api-key-here"
+
+# Database Configuration (for FastAPI)
+DATABASE_URL="sqlite:///moodbowl.db"
+
+# Redis Configuration (Optional for production caching/sessions)
+REDIS_URL="redis://localhost:6379/0"
+```
 
 ---
 
-## ⚠️ Common Troubleshooting
-- **Port 8000 Conflict**: If the server fails to start, ensure no other `uvicorn` or Docker instances are using port 8000.
-- **Docker Daemon Error**: If `docker-compose` fails, ensure Docker Desktop is open and the engine icon is green.
-- **Gemini Timeout**: If AI responses are slow, check your internet connection or increase `GEMINI_TIMEOUT_SECONDS` in `.env`.
+## 🚀 Setup & Launch Guide
 
+### 1. Set Up the FastAPI Backend
+
+1.  Open a terminal and navigate to the `backend/` directory:
+    ```powershell
+    cd backend
+    ```
+2.  Create and activate a virtual environment:
+    ```powershell
+    python -m venv venv
+    # Windows:
+    .\venv\Scripts\activate
+    # macOS/Linux:
+    source venv/bin/activate
+    ```
+3.  Install dependencies:
+    ```powershell
+    pip install -r requirements.txt
+    ```
+4.  Seed the FastAPI SQLite database:
+    ```powershell
+    python -m app.seed
+    ```
+5.  Start the FastAPI Server:
+    ```powershell
+    uvicorn app.main:app --port 8080 --reload
+    ```
+    *Access Swagger documentation at:* `http://localhost:8080/docs`
+
+---
+
+### 2. Set Up the Django Streaming & Frontend Server
+
+1.  Open a new terminal and navigate to the `live-streaming/` submodule folder:
+    ```powershell
+    cd live-streaming
+    ```
+2.  Install dependencies:
+    ```powershell
+    pip install -r requirements.txt
+    ```
+3.  Run migrations and seed the Django SQLite database:
+    ```powershell
+    python manage.py migrate
+    python manage.py seed_data
+    ```
+4.  Start the Django ASGI development server:
+    ```powershell
+    python manage.py runserver 8000
+    ```
+
+---
+
+## 🔗 How to Use the App
+
+Open your browser and navigate to:
+👉 **[http://localhost:8000/app/](http://localhost:8000/app/)**
+
+### 👥 Demo Login Credentials
+*   **Email:** `user1@moodbite.demo`
+*   **Password:** `demo1234`
+*   *(Or click "Continue as Guest")*
+
+### 🎙️ AI Voice Chat Feature
+1.  Navigate to the Voice tab inside the app.
+2.  Click **"Connect Live AI Assistant"** (Bito Live Waiter).
+3.  Grant microphone permissions.
+4.  Talk to Bito directly! Your voice is streamed in real-time, and Bito replies with immediate voice feedback, recommending food matching your vibe.
+    *   *Note: If no `GOOGLE_GEMINI_API_KEY` is provided, Bito will run in an interactive local Mock Mode to demonstrate the full workflow.*
+
+---
+
+## 📊 Analytics Dashboard
+Visit the live dashboard to visualize order metrics, mood distributions, and model performance:
+👉 **[http://localhost:8000/dashboard/](http://localhost:8000/dashboard/)**
