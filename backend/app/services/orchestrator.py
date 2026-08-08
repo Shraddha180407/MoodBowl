@@ -357,8 +357,8 @@ History:
             client = genai.Client(api_key=settings.GOOGLE_GEMINI_API_KEY)
             
             try:
-                # Use standard model name format
-                async with client.aio.live.connect(model='models/gemini-2.0-flash-exp', config={'system_instruction': instruction}) as session:
+                # Use standard model name format without models/ prefix
+                async with client.aio.live.connect(model='gemini-2.0-flash-exp', config={'system_instruction': instruction}) as session:
                     print("DEBUG: Gemini Live Session successfully opened!")
                     
                     # Force an initial greeting
