@@ -1,0 +1,107 @@
+[
+  {
+    "id": 1,
+    "text": "I am feeling so stressed and tired after a long day at work, can you recommend some comfort food?",
+    "expected_intent": "browsing",
+    "expected_mood": "stressed",
+    "notes": "Expresses high stress and fatigue, requesting food recommendations based on mood."
+  },
+  {
+    "id": 2,
+    "text": "Can I get a cheeseburger and fries please?",
+    "expected_intent": "ordering",
+    "expected_mood": "neutral",
+    "notes": "Direct ordering request for specific items."
+  },
+  {
+    "id": 3,
+    "text": "I recently became vegetarian, so please exclude any meat products from my suggestions.",
+    "expected_intent": "preference_update",
+    "expected_mood": "neutral",
+    "notes": "Updates dietary preferences/restrictions to vegetarian."
+  },
+  {
+    "id": 4,
+    "text": "Show me what I ordered last Tuesday.",
+    "expected_intent": "history",
+    "expected_mood": "neutral",
+    "notes": "Queries past order history."
+  },
+  {
+    "id": 5,
+    "text": "Um, hello? Are you there?",
+    "expected_intent": "ambiguous",
+    "expected_mood": "neutral",
+    "notes": "No clear intent or mood, should trigger clarification/fallback."
+  },
+  {
+    "id": 6,
+    "text": "I just won my match! Let's get something sweet and fancy to celebrate!",
+    "expected_intent": "browsing",
+    "expected_mood": "celebrating",
+    "notes": "Expresses excitement and celebration, browsing for food."
+  },
+  {
+    "id": 7,
+    "text": "I'm allergic to peanuts and walnuts, make sure to save that.",
+    "expected_intent": "preference_update",
+    "expected_mood": "neutral",
+    "notes": "Updates allergy preferences."
+  },
+  {
+    "id": 8,
+    "text": "Yes, please place the order for the spicy chicken bowl.",
+    "expected_intent": "ordering",
+    "expected_mood": "neutral",
+    "notes": "Confirming/placing an order."
+  },
+  {
+    "id": 9,
+    "text": "I'm feeling down and quite sad today, looking for something warm to eat.",
+    "expected_intent": "browsing",
+    "expected_mood": "sad",
+    "notes": "Expresses sadness, requesting food recommendations."
+  },
+  {
+    "id": 10,
+    "text": "What did I buy yesterday afternoon?",
+    "expected_intent": "history",
+    "expected_mood": "neutral",
+    "notes": "Queries order history."
+  },
+  {
+    "id": 11,
+    "text": "I don't know, maybe just suggest something?",
+    "expected_intent": "browsing",
+    "expected_mood": "neutral",
+    "notes": "Ambiguous/soft request for browsing recommendations."
+  },
+  {
+    "id": 12,
+    "text": "Oh that's awesome! I'm so happy right now! Let's get pizza!",
+    "expected_intent": "browsing",
+    "expected_mood": "happy",
+    "notes": "Expresses happiness, browsing for pizza."
+  },
+  {
+    "id": 13,
+    "text": "Cancel my last order, wait, actually let's see what else you have.",
+    "expected_intent": "ambiguous",
+    "expected_mood": "neutral",
+    "notes": "Conflicting statements, likely requires clarification fallback."
+  },
+  {
+    "id": 14,
+    "text": "I'm exhausted and have zero energy, need something healthy to boost my mood.",
+    "expected_intent": "browsing",
+    "expected_mood": "tired",
+    "notes": "Expresses exhaustion/tiredness, seeking recommendations."
+  },
+  {
+    "id": 15,
+    "text": "Please remove gluten from my allergens list, I am fine now.",
+    "expected_intent": "preference_update",
+    "expected_mood": "neutral",
+    "notes": "Updates dietary allergens preference."
+  }
+]
